@@ -1,31 +1,77 @@
-function add(num1, num2) {
-    return num1+num2;
+let prevNum = "", curNum = "", operation = "";
+
+const buttons = document.querySelectorAll("button");
+buttons.forEach((button) => setEventListener(button));
+const display = document.querySelector(".display");
+
+function addNumbers(button) {
+    if (curNum.length == 10) return alert("Numeber length exceeded. Enter shorter number");
+    let tempVar = button.target.id;
+    curNum += tempVar;
+    display.textContent = `${prevNum} ${operation} ${curNum}`;
 }
 
-function subtract(num1, num2) {
-    return num1-num2;
-}
-
-function multiply(num1, num2) {
-    return num1*num2;
-}
-
-function divide() {
-    if (num2 == 0) {
-        return "Divide by zero error.";
+function addOperation(button) {
+    if (curNum == '') return;
+    if (prevNum != '') {
+        calculate();
     }
-    return num1/num2;
+
+    let tempVar = button.target.id;
+    operation = tempVar;
+    prevNum = curNum;
+    curNum = '';
+
+    display.textContent = `${prevNum} ${operation}`; 
+    
 }
 
-function operate(num1, num2, opr) {
-    switch(opr) {
+function calculate() {
+    if (prevNum == '' || curNum == '') return;
+    prevNum = parseFloat(prevNum);
+    curNum = parseFloat(curNum);
+    let result;
+
+    switch(operation) {
         case '+':
-            return add(num1, num2);
+            result = prevNum+curNum;
+            break;
         case '-':
-            return subtract(num1, num2);
+            result = prevNum-curNum;
+            break;
         case '*':
-            return multiply(num1, num2);
+            result = prevNum*curNum;
+            break;
+        case '/':
+            if (curNum == 0) return alaert(`Divide by zero erro.`);
+            result = Math.round(prevNum/curNum);
+            break;
         default:
-            return divide(num1, num2);
+            result = "Invalid";
+    }
+
+    prevNum = '';
+    operation = '';
+    curNum = result.toString();
+    display.textContent = `${curNum}`;
+}
+
+function clearDisplay() {
+    prevNum = '';
+    curNum = '';
+    operation = '';
+    display.textContent = '0';
+}
+
+function setEventListener(button) {
+    const operators = ['+', '-', '*', '/'];
+    if (button.id == "clear") {
+        button.addEventListener("click", clearDisplay);
+    } else if (operators.includes(button.id)) {
+        button.addEventListener("click", addOperation);
+    } else if (button.id == '=') {
+        button.addEventListener("click", calculate);
+    }else {
+        button.addEventListener("click", addNumbers);
     }
 }
